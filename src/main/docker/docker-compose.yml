@@ -1,0 +1,36 @@
+version: '3.9'
+
+networks:
+  java:
+    driver: bridge
+
+services:
+    education:
+        image: 'docker-spring-boot:latest'
+        build:
+          context: .
+          dockerfile: Dockerfile
+        ports:
+            - "8000:8080"
+        depends_on:
+            - pg_education
+        networks:
+        - java
+        container_name: education
+        environment:
+          - SPRING_DATASOURCE_URL=jdbc:postgresql://pg_education:5432/education
+          - SPRING_DATASOURCE_USERNAME=postgres
+          - SPRING_DATASOURCE_PASSWORD=P@ssw0rd
+          - SPRING_JPA_GENERATE_DDL=true
+          - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    pg_education:
+        image: "postgres:latest"
+        ports:
+            - "5433:5432"
+        environment:
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: "P@ssw0rd"
+          POSTGRES_DB: "education"       
+        networks:
+        - java
+        container_name: pg_education
